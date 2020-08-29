@@ -6,7 +6,7 @@ bool saveTrigger = false;
 
 Mesh *mainScene;
 
-vec3 lightPosition = vec3(5.f, 5.f, 5.f);
+vec3 lightPosition = vec3(10.f, 10.f, 10.f);
 vec3 lightColor = vec3(1.f, 1.f, 1.f);
 vec3 lightDir = normalize(vec3(-1.f, -1.f, -1.f));
 
@@ -279,6 +279,10 @@ void initMatrix() {
   lightV = lookAt(lightPosition, lightPosition + lightDir, up);
   lightP = perspective(initialFoV, 1.f * WINDOW_WIDTH / WINDOW_HEIGHT,
                        nearPlane, farPlane);
+
+  glUseProgram(mainScene->shader);
+  glUniformMatrix4fv(mainScene->uniLightV, 1, GL_FALSE, value_ptr(lightV));
+  glUniformMatrix4fv(mainScene->uniLightP, 1, GL_FALSE, value_ptr(lightP));
 }
 
 void initTexture() {

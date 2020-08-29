@@ -274,6 +274,8 @@ void Mesh::initUniform() {
   uniLightColor = myGetUniformLocation(shader, "lightColor");
   uniLightPosition = myGetUniformLocation(shader, "lightPosition");
   uniTexDepth = myGetUniformLocation(shader, "texDepth");
+  uniLightV = myGetUniformLocation(shader, "lightV");
+  uniLightP = myGetUniformLocation(shader, "lightP");
 }
 
 void Mesh::initBuffers() {

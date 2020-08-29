@@ -43,6 +43,7 @@ public:
   GLuint shader;
   GLuint tboBase, tboNormal;
   GLint uniModel, uniView, uniProjection;
+  GLint uniLightV, uniLightP;
   GLint uniEyePoint, uniLightColor, uniLightPosition;
   GLint uniTexBase, uniTexNormal, uniTexDepth;
 
