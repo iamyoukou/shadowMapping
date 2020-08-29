@@ -22,8 +22,8 @@ void main() {
   ndc = ndc / 2.0 + 0.5;
 
   float closestDepth = texture(texDepth, ndc.xy).r;
-  float currentDepth = lightSpacePos.z;
-  float shadow = closestDepth > currentDepth ? 0.0 : 1.0;
+  float currentDepth = ndc.z;
+  float shadow = closestDepth > currentDepth ? 1.0 : 0.0;
 
   vec3 N = worldN;
   vec3 L = normalize(lightPosition - worldPos);
@@ -45,7 +45,9 @@ void main() {
   outputColor += diffuse * dc * attenuation;
   outputColor += specular * sc * attenuation;
 
-  float z = 1 - closestDepth;
-  z *= 1000.0;
-  outputColor = vec4(z);
+  // float z = abs(1 - currentDepth);
+  // z *= 1000.0;
+  // outputColor = vec4(z);
+
+  outputColor *= shadow;
 }
