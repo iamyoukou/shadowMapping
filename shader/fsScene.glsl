@@ -16,14 +16,6 @@ float alpha = 20;
 out vec4 outputColor;
 
 void main() {
-  // after [-1, 1] to [0, 1],
-  // ndc will be the uv coordinates of the current fragment on the screen
-  vec3 ndc = lightSpacePos.xyz / lightSpacePos.w;
-  ndc = ndc / 2.0 + 0.5;
-
-  float closestDepth = texture(texDepth, ndc.xy).r;
-  float currentDepth = ndc.z;
-  float shadow = closestDepth > currentDepth ? 1.0 : 0.0;
 
   vec3 N = worldN;
   vec3 L = normalize(lightPosition - worldPos);
@@ -44,6 +36,16 @@ void main() {
   outputColor += ambient;
   outputColor += diffuse * dc * attenuation;
   outputColor += specular * sc * attenuation;
+
+  // after [-1, 1] to [0, 1],
+  // ndc will be the uv coordinates of the current fragment on the screen
+  vec3 ndc = lightSpacePos.xyz / lightSpacePos.w;
+  ndc = ndc / 2.0 + 0.5;
+
+  float closestDepth = texture(texDepth, ndc.xy).r;
+  float currentDepth = ndc.z;
+  float bias = 0.000005;
+  float shadow = closestDepth + bias > currentDepth ? 1.0 : 0.0;
 
   // float z = abs(1 - currentDepth);
   // z *= 1000.0;

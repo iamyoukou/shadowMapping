@@ -6,7 +6,7 @@ bool saveTrigger = false;
 
 Mesh *mainScene;
 
-vec3 lightPosition = vec3(10.f, 10.f, 10.f);
+vec3 lightPosition = vec3(20.f, 20.f, 20.f);
 vec3 lightColor = vec3(1.f, 1.f, 1.f);
 vec3 lightDir = normalize(vec3(-1.f, -1.f, -1.f));
 
