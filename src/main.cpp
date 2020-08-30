@@ -6,9 +6,9 @@ bool saveTrigger = false;
 
 Mesh *mainScene;
 
-vec3 lightPosition = vec3(20.f, 20.f, 20.f);
+vec3 lightPosition = vec3(10.f, 10.f, 10.f);
 vec3 lightColor = vec3(1.f, 1.f, 1.f);
-vec3 lightDir = normalize(vec3(-1.f, -1.f, -1.f));
+vec3 lightDir = -normalize(lightPosition - vec3(0.f));
 
 /* for view control */
 float verticalAngle = -1.9257;
@@ -84,8 +84,10 @@ int main(int argc, char **argv) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glDepthFunc(GL_LESS);
 
+    glCullFace(GL_FRONT);
     mainScene->draw(tempModel, lightV, lightP, lightPosition, lightColor,
                     lightPosition, 13, 14);
+    glCullFace(GL_BACK);
 
     if (saveTrigger) {
       saveDepth();
@@ -258,6 +260,10 @@ void initGL() { // Initialise GLFW
 
   glEnable(GL_PROGRAM_POINT_SIZE);
   glPointSize(20);
+
+  // slope scale depth bias
+  glEnable(GL_POLYGON_OFFSET_FILL);
+  glPolygonOffset(1.0, 1.0);
 }
 
 void initOthers() {
@@ -277,8 +283,8 @@ void initMatrix() {
                            nearPlane, farPlane);
 
   lightV = lookAt(lightPosition, lightPosition + lightDir, up);
-  lightP = perspective(initialFoV, 1.f * WINDOW_WIDTH / WINDOW_HEIGHT,
-                       nearPlane, farPlane);
+  lightP =
+      perspective(initialFoV, 1.f * WINDOW_WIDTH / WINDOW_HEIGHT, 1.0f, 100.0f);
 
   glUseProgram(mainScene->shader);
   glUniformMatrix4fv(mainScene->uniLightV, 1, GL_FALSE, value_ptr(lightV));

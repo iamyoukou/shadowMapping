@@ -44,12 +44,12 @@ void main() {
 
   float closestDepth = texture(texDepth, ndc.xy).r;
   float currentDepth = ndc.z;
-  float bias = 0.000005;
-  float shadow = closestDepth + bias > currentDepth ? 1.0 : 0.0;
+  bool shadow = closestDepth > currentDepth ? true : false;
 
   // float z = abs(1 - currentDepth);
   // z *= 1000.0;
   // outputColor = vec4(z);
 
-  outputColor *= shadow;
+  if (!shadow)
+    outputColor = mix(outputColor, vec4(0), 0.75);
 }
