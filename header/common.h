@@ -45,7 +45,8 @@ public:
   GLint uniModel, uniView, uniProjection;
   GLint uniLightV, uniLightP;
   GLint uniEyePoint, uniLightColor, uniLightPosition;
-  GLint uniTexBase, uniTexNormal, uniTexDepth;
+  GLint uniTexBase, uniTexNormal, uniTexDepth, uniTexScene;
+  GLint uniDrawScene;
 
   // aabb
   vec3 min, max;

@@ -274,8 +274,10 @@ void Mesh::initUniform() {
   uniLightColor = myGetUniformLocation(shader, "lightColor");
   uniLightPosition = myGetUniformLocation(shader, "lightPosition");
   uniTexDepth = myGetUniformLocation(shader, "texDepth");
+  uniTexScene = myGetUniformLocation(shader, "texScene");
   uniLightV = myGetUniformLocation(shader, "lightV");
   uniLightP = myGetUniformLocation(shader, "lightP");
+  uniDrawScene = myGetUniformLocation(shader, "drawScene");
 }
 
 void Mesh::initBuffers() {
@@ -379,6 +381,7 @@ void Mesh::draw(mat4 M, mat4 V, mat4 P, vec3 eye, vec3 lightColor,
   glUniform3fv(uniLightColor, 1, value_ptr(lightColor));
   glUniform3fv(uniLightPosition, 1, value_ptr(lightPosition));
   glUniform1i(uniTexDepth, 3);
+  glUniform1i(uniTexScene, 4);
 
   for (size_t i = 0; i < scene->mNumMeshes; i++) {
     int numVtxs = scene->mMeshes[i]->mNumVertices;

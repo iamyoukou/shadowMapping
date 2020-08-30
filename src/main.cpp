@@ -28,6 +28,8 @@ vec3 up = vec3(0.f, 1.f, 0.f);
 GLuint fboDepth, tboDepth;
 mat4 lightV, lightP;
 
+GLuint fboScene, tboScene;
+
 // test
 vector<Point> pts;
 GLuint pointShader;
@@ -93,11 +95,32 @@ int main(int argc, char **argv) {
       saveDepth();
     }
 
+    // draw scene without shadow
+    // glBindFramebuffer(GL_FRAMEBUFFER, tboScene);
+    // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    //
+    // glUseProgram(mainScene->shader);
+    // glUniform1i(mainScene->uniDrawScene, 0);
+    //
+    // tempModel = translate(mat4(1.f), vec3(2.5f, 0.f, 0.f));
+    // mainScene->draw(tempModel, view, projection, eyePoint, lightColor,
+    //                 lightPosition, 13, 14);
+
     // render to main screen
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    glUseProgram(mainScene->shader);
+    glUniform1i(mainScene->uniDrawScene, 0);
+
     tempModel = translate(mat4(1.f), vec3(2.5f, 0.f, 0.f));
+    mainScene->draw(tempModel, view, projection, eyePoint, lightColor,
+                    lightPosition, 13, 14);
+
+    glUseProgram(mainScene->shader);
+    glUniform1i(mainScene->uniDrawScene, 1);
+    vec3 offset = lightDir * 0.02f;
+    tempModel = translate(mat4(1.f), vec3(2.5f, 0.f, 0.f) + offset);
     mainScene->draw(tempModel, view, projection, eyePoint, lightColor,
                     lightPosition, 13, 14);
 
@@ -323,6 +346,23 @@ void initFrameBuffer() {
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
   glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, tboDepth, 0);
+
+  // framebuffer for writing shadow
+  glGenFramebuffers(1, &fboScene);
+  glBindFramebuffer(GL_FRAMEBUFFER, fboScene);
+
+  glActiveTexture(GL_TEXTURE0 + 4);
+  glGenTextures(1, &tboScene);
+  glBindTexture(GL_TEXTURE_2D, tboScene);
+
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, WINDOW_WIDTH * 2,
+               WINDOW_HEIGHT * 2, 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+  glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, tboScene, 0);
 }
 
 void saveDepth() {
