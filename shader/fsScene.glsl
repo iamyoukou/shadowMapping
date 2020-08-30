@@ -20,6 +20,7 @@ out vec4 outputColor;
 void main() {
   outputColor = vec4(0);
 
+  // draw scene without shadow
   if (drawScene == 1) {
     vec3 N = worldN;
     vec3 L = normalize(lightPosition - worldPos);
@@ -50,10 +51,13 @@ void main() {
     float currentDepth = ndc.z;
     bool shadow = closestDepth > currentDepth ? true : false;
 
+    // scene color which is in shadow
     vec2 sceneNdc = clipSpace.xy / clipSpace.w;
     sceneNdc = sceneNdc / 2.0 + 0.5;
     vec4 sceneColor = texture(texScene, sceneNdc);
 
+    // if fragment is in shadow,
+    // blend the scene color with the shadow
     if (!shadow) {
       outputColor = mix(sceneColor, vec4(0), 0.75);
     } else {

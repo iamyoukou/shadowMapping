@@ -31,6 +31,23 @@ According to [3], `glPolygonOffset` is the built-in slope-scale depth bias in Op
 When generating depth map, `glCullFace(GL_FRONT)` can also mitigate shadow acne.
 But as a side effect, it may aggravate peter panning.
 
+## A trick to avoid peter panning
+
+![trick](./trick.png)
+
+I separate the scene and shadows into different rendering procedures.
+
+-   First, the scene without shadows is rendered into a texture (`sceneTex`).
+
+-   Second, shadows are rendered based on depth map.
+    The scene color from `sceneTex` is blended with the shadow for each fragment.
+    Fragments which are not in shadow are discarded.
+
+-   Third, the remaining scene is rendered.
+    A small offset along `lightDirection` is added into the model matrix.
+    This offset avoids the gap between objects and their shadows.
+    Hence, the peter panning artifact is avoided.
+
 # Result
 
 ![result](./result.png)

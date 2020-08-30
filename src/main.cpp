@@ -11,15 +11,15 @@ vec3 lightColor = vec3(1.f, 1.f, 1.f);
 vec3 lightDir = -normalize(lightPosition - vec3(0.f));
 
 /* for view control */
-float verticalAngle = -1.9257;
-float horizontalAngle = 0.925862;
+float verticalAngle = -2.0216;
+float horizontalAngle = 1.90727;
 float initialFoV = 45.0f;
 float speed = 5.0f;
 float mouseSpeed = 0.005f;
 float nearPlane = 0.01f, farPlane = 1000.f;
 
 mat4 model, view, projection;
-vec3 eyePoint = vec3(7.117970, 3.615396, 4.588941);
+vec3 eyePoint = vec3(-4.042061, 5.505946, 10.140559);
 vec3 eyeDirection =
     vec3(sin(verticalAngle) * cos(horizontalAngle), cos(verticalAngle),
          sin(verticalAngle) * sin(horizontalAngle));
@@ -119,6 +119,7 @@ int main(int argc, char **argv) {
     mainScene->draw(tempModel, view, projection, eyePoint, lightColor,
                     lightPosition, 13, 14);
 
+    // render the remaining scene
     glUseProgram(mainScene->shader);
     glUniform1i(mainScene->uniDrawScene, 1);
     vec3 offset = lightDir * 0.03f;
