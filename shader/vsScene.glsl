@@ -7,6 +7,7 @@ out vec2 uv;
 out vec3 worldPos;
 out vec3 worldN;
 out vec4 lightSpacePos;
+out vec4 clipSpace;
 
 uniform mat4 M, V, P;
 uniform mat4 lightV, lightP;
@@ -23,4 +24,5 @@ void main() {
   worldN = normalize(worldN);
 
   lightSpacePos = lightP * lightV * M * vec4(vtxCoord, 1.0);
+  clipSpace = gl_Position;
 }

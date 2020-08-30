@@ -4,6 +4,7 @@ in vec2 uv;
 in vec3 worldPos;
 in vec3 worldN;
 in vec4 lightSpacePos;
+in vec4 clipSpace;
 
 uniform sampler2D texDepth, texScene;
 uniform vec3 lightColor;
@@ -49,16 +50,13 @@ void main() {
     float currentDepth = ndc.z;
     bool shadow = closestDepth > currentDepth ? true : false;
 
-    vec4 sceneColor = texture(texScene, ndc.xy);
-
-    // float z = abs(1 - currentDepth);
-    // z *= 1000.0;
-    // outputColor = vec4(z);
+    vec2 sceneNdc = clipSpace.xy / clipSpace.w;
+    sceneNdc = sceneNdc / 2.0 + 0.5;
+    vec4 sceneColor = texture(texScene, sceneNdc);
 
     if (!shadow) {
-      outputColor = mix(outputColor, vec4(0), 0.75);
+      outputColor = mix(sceneColor, vec4(0), 0.75);
     } else {
-      // outputColor = vec4(1.0);
       discard;
     }
   }

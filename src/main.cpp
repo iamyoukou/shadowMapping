@@ -81,11 +81,12 @@ int main(int argc, char **argv) {
     // tempModel = rotate(tempModel, 3.14f / 2.0f, vec3(1, 0, 0));
     // tempModel = scale(tempModel, vec3(0.5, 0.5, 0.5));
 
-    // render to framebuffer
+    /* render depth map */
     glBindFramebuffer(GL_FRAMEBUFFER, fboDepth);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glDepthFunc(GL_LESS);
 
+    // culling front face to mitigate shadow acne
     glCullFace(GL_FRONT);
     mainScene->draw(tempModel, lightV, lightP, lightPosition, lightColor,
                     lightPosition, 13, 14);
@@ -95,21 +96,22 @@ int main(int argc, char **argv) {
       saveDepth();
     }
 
-    // draw scene without shadow
-    // glBindFramebuffer(GL_FRAMEBUFFER, tboScene);
-    // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    //
-    // glUseProgram(mainScene->shader);
-    // glUniform1i(mainScene->uniDrawScene, 0);
-    //
-    // tempModel = translate(mat4(1.f), vec3(2.5f, 0.f, 0.f));
-    // mainScene->draw(tempModel, view, projection, eyePoint, lightColor,
-    //                 lightPosition, 13, 14);
+    /* render main scene without shadow */
+    glBindFramebuffer(GL_FRAMEBUFFER, fboScene);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    // render to main screen
+    glUseProgram(mainScene->shader);
+    glUniform1i(mainScene->uniDrawScene, 1);
+
+    tempModel = translate(mat4(1.f), vec3(2.5f, 0.f, 0.f));
+    mainScene->draw(tempModel, view, projection, eyePoint, lightColor,
+                    lightPosition, 13, 14);
+
+    /* render main screen */
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    // render the shadow
     glUseProgram(mainScene->shader);
     glUniform1i(mainScene->uniDrawScene, 0);
 
@@ -119,7 +121,7 @@ int main(int argc, char **argv) {
 
     glUseProgram(mainScene->shader);
     glUniform1i(mainScene->uniDrawScene, 1);
-    vec3 offset = lightDir * 0.02f;
+    vec3 offset = lightDir * 0.03f;
     tempModel = translate(mat4(1.f), vec3(2.5f, 0.f, 0.f) + offset);
     mainScene->draw(tempModel, view, projection, eyePoint, lightColor,
                     lightPosition, 13, 14);
@@ -355,14 +357,15 @@ void initFrameBuffer() {
   glGenTextures(1, &tboScene);
   glBindTexture(GL_TEXTURE_2D, tboScene);
 
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, WINDOW_WIDTH * 2,
-               WINDOW_HEIGHT * 2, 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, WINDOW_WIDTH * 2, WINDOW_HEIGHT * 2,
+               0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
   glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, tboScene, 0);
+  glDrawBuffer(GL_COLOR_ATTACHMENT1);
 }
 
 void saveDepth() {
