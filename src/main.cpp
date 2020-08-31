@@ -122,7 +122,7 @@ int main(int argc, char **argv) {
     // render the remaining scene
     glUseProgram(mainScene->shader);
     glUniform1i(mainScene->uniDrawScene, 1);
-    vec3 offset = lightDir * 0.03f;
+    vec3 offset = lightDir * 0.05f;
     tempModel = translate(mat4(1.f), vec3(2.5f, 0.f, 0.f) + offset);
     mainScene->draw(tempModel, view, projection, eyePoint, lightColor,
                     lightPosition, 13, 14);

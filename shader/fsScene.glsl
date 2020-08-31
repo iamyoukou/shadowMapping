@@ -47,9 +47,34 @@ void main() {
     vec3 ndc = lightSpacePos.xyz / lightSpacePos.w;
     ndc = ndc / 2.0 + 0.5;
 
+    float shadowFactor = 0.75;
+
     float closestDepth = texture(texDepth, ndc.xy).r;
     float currentDepth = ndc.z;
-    bool shadow = closestDepth > currentDepth ? true : false;
+    bool isInShadow = currentDepth > closestDepth ? true : false;
+
+    // PCF
+    if (isInShadow) {
+      vec2 texelSize = 1.0 / textureSize(texDepth, 0);
+
+      // 3x3 samples
+      for (int x = -1; x <= 1; ++x) {
+        for (int y = -1; y <= 1; ++y) {
+          // skip the original uv
+          if (x == 0 && y == 0)
+            continue;
+
+          float pcfDepth = texture(texDepth, ndc.xy + vec2(x, y) * texelSize).r;
+          bool isShadow = currentDepth > pcfDepth ? true : false;
+
+          if (!isShadow) {
+            shadowFactor -= 0.15;
+          }
+        }
+      } // end 3x3 samples
+
+      shadowFactor = max(shadowFactor, 0.0);
+    } // // end PCF
 
     // scene color which is in shadow
     vec2 sceneNdc = clipSpace.xy / clipSpace.w;
@@ -58,8 +83,8 @@ void main() {
 
     // if fragment is in shadow,
     // blend the scene color with the shadow
-    if (!shadow) {
-      outputColor = mix(sceneColor, vec4(0), 0.75);
+    if (isInShadow) {
+      outputColor = mix(sceneColor, vec4(0), shadowFactor);
     } else {
       discard;
     }
