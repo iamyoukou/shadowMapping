@@ -5,6 +5,8 @@ It uses a depth map which is rendered from a light source.
 By comparing the value of the depth map with the depth value of a certain fragment,
 the fragment is decided to be whether in shadow or not.
 
+![result](./result.png)
+
 # Note
 
 There are two common artifacts in shadow mapping: shadow acne and peter panning.
@@ -47,10 +49,6 @@ I separate the scene and shadows into different rendering procedures.
     A small offset along `lightDirection` is added into the model matrix.
     This offset avoids the gap between objects and their shadows.
     Hence, the peter panning artifact is avoided.
-
-# Result
-
-![result](./result.png)
 
 # Reference
 

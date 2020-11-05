@@ -1,4 +1,4 @@
-CXX=llvm-g++
+CXX=g++-10
 COMPILE=-g -c -std=c++17 \
 -I/usr/local/Cellar/glew/2.1.0_1/include \
 -I/usr/local/Cellar/glfw/3.3.2/include \
@@ -32,4 +32,7 @@ common.o: $(SRC_DIR)/common.cpp
 .PHONY: cleanObj
 
 cleanObj:
-	rm -f *.o
+	rm -vf *.o
+
+cleanImg:
+	rm -vf ./result/*
